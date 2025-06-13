@@ -24,9 +24,11 @@ public class GptModel {
 
         String apiKey = System.getenv("API_KEY");
 
+        System.out.println(apiKey);
+
         MediaType mediaType = MediaType.parse("application/json");
-        List<String> messages = new ArrayList<>();
-        messages.add(this.prompt);
+        List<Message> messages = new ArrayList<>();
+        messages.add(new Message("user", this.prompt));
 
         JSONObject data = new JSONObject();
         data.put("model", "gpt-3.5-turbo");
@@ -38,7 +40,7 @@ public class GptModel {
         Request request = new Request.Builder()
                 .url(API_URL)
                 .post(body)
-                .addHeader("Authorization", "Bearer " + apiKey)
+                .addHeader("Authorization", "Bearer " + apiKey + "")
                 .addHeader("Content-Type", "application/json")
                 .build();
 

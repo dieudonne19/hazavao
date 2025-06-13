@@ -38,7 +38,7 @@ out/
 
 .aws-sam
 **.toml
-.env
+src/main/java/com/hazavao/dev/.env
 
 ### Mac OS ###
 .DS_Store
