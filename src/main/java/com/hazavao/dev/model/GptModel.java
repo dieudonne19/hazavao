@@ -9,35 +9,43 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class GptModel {
     private final String prompt = "Tu es un pure malgache, explique moi ce mot en malgache";
-    private final String API_URL = "https://api.openai.com/v1/completions";
+    private final String API_URL = "https://api.openai.com/v1/chat/completions";
 
 
     @SneakyThrows
     public String hazavao(String teny) {
-        String api_key = System.getenv("API_KEY");
+        OkHttpClient client = new OkHttpClient();
 
-        HttpURLConnection con = (HttpURLConnection) new URL(this.API_URL).openConnection();
+        String apiKey = System.getenv("API_KEY");
 
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
-        con.setRequestProperty("Authorization", "Bearer " + api_key);
+        MediaType mediaType = MediaType.parse("application/json");
+        List<String> messages = new ArrayList<>();
+        messages.add(this.prompt);
 
         JSONObject data = new JSONObject();
         data.put("model", "gpt-3.5-turbo");
-        data.put("prompt", this.prompt);
+        data.put("messages", messages);
 
-        con.setDoOutput(true);
-        con.getOutputStream().write(data.toString().getBytes());
 
-        String output = new BufferedReader(new InputStreamReader(con.getInputStream())).lines()
-                .reduce((a, b) -> a + b).get();
+        RequestBody body = RequestBody.create(mediaType, data.toString());
 
-        String res = new JSONObject(output).getJSONArray("choices").getJSONObject(0).getString("text");
+        Request request = new Request.Builder()
+                .url(API_URL)
+                .post(body)
+                .addHeader("Authorization", "Bearer " + apiKey)
+                .addHeader("Content-Type", "application/json")
+                .build();
 
-        return res;
+        Response response = client.newCall(request).execute();
+        String responseBody = response.body().string();
+
+        System.out.println(responseBody);
+        return responseBody;
     }
 }
