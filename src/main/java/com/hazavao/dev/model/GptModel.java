@@ -18,9 +18,6 @@ public class GptModel {
 
     @SneakyThrows
     public String hazavao(String teny) {
-        OkHttpClient client = new OkHttpClient();
-
-        String prompt = "My name is";
         String api_key = System.getenv("API_KEY");
 
         HttpURLConnection con = (HttpURLConnection) new URL(this.API_URL).openConnection();
@@ -31,7 +28,7 @@ public class GptModel {
 
         JSONObject data = new JSONObject();
         data.put("model", "gpt-3.5-turbo");
-
+        data.put("prompt", this.prompt);
 
         con.setDoOutput(true);
         con.getOutputStream().write(data.toString().getBytes());
